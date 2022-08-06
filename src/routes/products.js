@@ -22,10 +22,19 @@ router.get('/:productId', (req, res) => {
 //POST
 router.post('/', (req, res) => {
   const body = req.body;
-  res.status(201).json({
-    msg: 'Product created',
-    data: body,
-  });
+  const product = service.create(body);
+  res.status(201).json(product);
+});
+//PATCH
+router.patch('/:id', (req, res) => {
+  const body = req.body;
+  const update = service.update(req.params.id, body);
+  res.json(update);
+});
+//DELETE
+router.delete('/:id', (req, res) => {
+  const msg = service.delete(req.params.id);
+  res.json(msg);
 });
 
 module.exports = router;
