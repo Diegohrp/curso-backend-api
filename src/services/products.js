@@ -44,7 +44,8 @@ class ProductsService {
   }
   update(id, changes) {
     const index = this.products.findIndex((product) => product.id === id);
-    if (index) {
+
+    if (index !== -1) {
       const product = this.products[index];
       this.products[index] = { ...product, ...changes };
       return {
@@ -52,7 +53,7 @@ class ProductsService {
         data: this.products[index],
       };
     } else {
-      throw new Error();
+      throw boom.notFound('Product not found');
     }
   }
   delete(id) {
@@ -64,7 +65,7 @@ class ProductsService {
         id,
       };
     } else {
-      throw new Error();
+      throw boom.notFound('Product not found');
     }
   }
 }
