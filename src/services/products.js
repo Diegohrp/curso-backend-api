@@ -1,5 +1,5 @@
 const faker = require('faker');
-
+const boom = require('@hapi/boom');
 class ProductsService {
   constructor() {
     this.products = [];
@@ -18,10 +18,18 @@ class ProductsService {
   }
 
   find() {
-    return this.products;
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(this.products), 4000);
+    });
   }
   findOne(id) {
-    return this.products.find((item) => item.id === id);
+    const product = this.products.find((item) => item.id === id);
+
+    if (product) {
+      return product;
+    } else {
+      throw boom.notFound('Product not found');
+    }
   }
   create(data) {
     const newProduct = {
