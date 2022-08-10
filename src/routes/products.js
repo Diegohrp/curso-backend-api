@@ -10,7 +10,7 @@ const {
   getProductSchema,
   createProductSchema,
   updateProductSchema,
-} = require('../schemas/products.schemas');
+} = require('../schemas/products');
 
 //Ruta estática
 router.get('/', async (req, res, next) => {
