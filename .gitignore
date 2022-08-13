@@ -5,7 +5,6 @@
 *~
 #Postgres 
 postgres_data
-postgres_data
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
 
@@ -158,5 +157,4 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-postgres_data
 # End of https://www.toptal.com/developers/gitignore/api/linux,node

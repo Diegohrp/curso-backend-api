@@ -14,7 +14,6 @@ app.use(express.json());
 const whitelist = ['http://127.0.0.1:5500', 'https://myapp.co'];
 const options = {
   origin: function (origin, callback) {
-    console.log(origin);
     if (whitelist.includes(origin) || !origin) {
       callback(null, true);
     } else {

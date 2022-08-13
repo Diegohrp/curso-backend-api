@@ -6,8 +6,10 @@ function logErrors(err, req, res, next) {
 
 function errorHandler(err, req, res, next) {
   console.log('Error Handler');
+  const errorMsg =
+    err.errors[0].message + ': ' + err.parent.detail || err.message;
   res.status(500).json({
-    message: err.message,
+    message: errorMsg,
   });
 }
 
