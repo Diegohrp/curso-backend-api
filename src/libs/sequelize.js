@@ -14,12 +14,12 @@ const sequelize = new Sequelize(URI, {
   dialect: 'postgres',
   logging: (msg) => console.log(msg),
 });
-
-async function createTables() {
-  setupModels(sequelize);
+setupModels(sequelize);
+/* async function createTables() {
+  
   await sequelize.sync();
 }
 
-createTables();
+createTables(); */
 
 module.exports = sequelize;
