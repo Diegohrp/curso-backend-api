@@ -1,17 +1,18 @@
 const faker = require('faker');
 const boom = require('@hapi/boom');
+const { models } = require('../libs/sequelize');
 //Connection pool
 /* const pool = require('../libs/postgres.pool'); */
 const sequelize = require('../libs/sequelize');
 
 class ProductsService {
   constructor() {
-    this.products = [];
-    this.generate();
+    /*  this.products = [];
+    this.generate(); */
     /* this.pool = pool;
     this.pool.on('error', (err) => console.error(err)); */
   }
-  generate() {
+  /* generate() {
     const size = 100;
     for (let index = 0; index < size; index++) {
       this.products.push({
@@ -21,15 +22,13 @@ class ProductsService {
         image: faker.image.imageUrl(),
       });
     }
-  }
+  } */
 
   async find() {
-    /* return new Promise((resolve, reject) => {
-      setTimeout(() => resolve(this.products), 4000);
-    }); */
-    const query = 'SELECT * FROM task';
-    const [data] = await sequelize.query(query);
-    return data;
+    const products = await models.Product.findAll({
+      include: ['category'],
+    });
+    return products;
   }
   findOne(id) {
     const product = this.products.find((item) => item.id === id);
@@ -40,16 +39,9 @@ class ProductsService {
       throw boom.notFound('Product not found');
     }
   }
-  create(data) {
-    const newProduct = {
-      id: faker.datatype.uuid(),
-      ...data,
-    };
-    this.products.push(newProduct);
-    return {
-      msg: 'Product created successfully',
-      data: newProduct,
-    };
+  async create(data) {
+    const newProduct = await models.Product.create(data);
+    return newProduct;
   }
   update(id, changes) {
     const index = this.products.findIndex((product) => product.id === id);

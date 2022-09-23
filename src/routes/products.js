@@ -29,7 +29,7 @@ router.get('/filtros', (req, res) => {
 router.get(
   '/:id',
   validateData(getProductSchema, 'params'),
-  (req, res, next) => {
+  async (req, res, next) => {
     try {
       const { id } = req.params;
       const product = service.findOne(id);
@@ -44,9 +44,9 @@ router.get(
 router.post(
   '/',
   validateData(createProductSchema, 'body'),
-  (req, res, next) => {
+  async (req, res, next) => {
     const body = req.body;
-    const product = service.create(body);
+    const product = await service.create(body);
     res.status(201).json(product);
   }
 );

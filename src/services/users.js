@@ -17,7 +17,9 @@ class UserService {
     const res = await client.query('SELECT * FROM task');
     return res.rows; */
 
-    const res = await models.User.findAll();
+    const res = await models.User.findAll({
+      include: ['customer'],
+    });
     return res;
   }
 
