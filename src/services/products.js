@@ -24,14 +24,17 @@ class ProductsService {
     }
   } */
 
-  async find() {
+  async find(offset = 0, limit = null, where = {}) {
     const products = await models.Product.findAll({
       include: ['category'],
+      offset,
+      limit,
+      where,
     });
     return products;
   }
-  findOne(id) {
-    const product = this.products.find((item) => item.id === id);
+  async findOne(id) {
+    const product = await models.Product.findByPk(id);
 
     if (product) {
       return product;

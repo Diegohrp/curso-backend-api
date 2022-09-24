@@ -2,7 +2,7 @@ const express = require('express');
 const ProductsService = require('../services/products');
 const router = express.Router();
 const service = new ProductsService();
-
+const { Op } = require('sequelize');
 //Middlewares
 const validateData = require('../middlewares/validate.middlewares');
 //Schemas
@@ -10,17 +10,33 @@ const {
   getProductSchema,
   createProductSchema,
   updateProductSchema,
+  getProductsSchema,
 } = require('../schemas/products');
 
 //Ruta estática
-router.get('/', async (req, res, next) => {
-  try {
-    const products = await service.find();
-    res.json(products);
-  } catch (err) {
-    next(err);
+router.get(
+  '/',
+  validateData(getProductsSchema, 'query'),
+  async (req, res, next) => {
+    try {
+      const { offset, limit, price_min, price_max } = req.query;
+      let where = {};
+      if (price_min && price_max) {
+        where = {
+          price: {
+            [Op.gte]: price_min,
+            [Op.lte]: price_max,
+          },
+        };
+      }
+
+      const products = await service.find(offset, limit, where);
+      res.json(products);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 router.get('/filtros', (req, res) => {
   res.json({ name: 'Lámpara', price: 200 });
@@ -32,8 +48,8 @@ router.get(
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const product = service.findOne(id);
-      res.json(product);
+      const product = await service.findOne(id);
+      res.status(200).json(product);
     } catch (err) {
       next(err);
     }
