@@ -5,7 +5,7 @@ const { dbUrl, isProd } = require('../config/config');
 //const URI = `postgres://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`;
 const options = {
   dialect: 'postgres',
-  logging: isProd ? false : true,
+  logging: isProd ? false : (msg) => console.log(msg),
 };
 
 if (isProd) {
