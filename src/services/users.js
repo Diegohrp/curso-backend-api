@@ -2,12 +2,21 @@ const boom = require('@hapi/boom');
 /* const createConnection = require('../libs/postgres'); */
 //sequelize es un obj, extraemos el atributo models
 const { models } = require('../libs/sequelize');
+const bycrypt = require('bcrypt');
 
 class UserService {
   constructor() {}
 
   async create(data) {
-    const newUser = await models.User.create(data);
+    const hash = await bycrypt.hash(data.password, 10); //bcrypt.hash(password,salt);
+    const newData = {
+      ...data,
+      password: hash,
+    };
+    const newUser = await models.User.create(newData);
+    //No retornamos el hash del pass, así que lo eliminamos del obj pero sigue en la db
+    //Como estamos usando sequelize, debemos acceder a dataValues
+    delete newUser.dataValues.password;
     return newUser;
   }
 
@@ -21,6 +30,15 @@ class UserService {
       include: ['customer'],
     });
     return res;
+  }
+
+  async findByEmail(email) {
+    const user = await models.User.findOne({
+      //La clave se debe llamar igual que nuestro campo en la tabla
+      //En nuestra tabla tenemos el campo email, por eso es que esto funciona
+      where: { email },
+    });
+    return user;
   }
 
   async findOne(id) {

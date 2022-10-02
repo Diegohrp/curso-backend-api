@@ -6,6 +6,7 @@ const {
   logErrors,
   boomErrors,
 } = require('./middlewares/errors.middlewares');
+
 const port = process.env.PORT || '3000';
 const app = express();
 app.use(express.json());
@@ -22,9 +23,9 @@ const options = {
   },
 };
 app.use(cors(options));
+require('./utils/auth');
 
 routerAPI(app);
-
 app.use(logErrors);
 app.use(boomErrors);
 app.use(errorHandler);

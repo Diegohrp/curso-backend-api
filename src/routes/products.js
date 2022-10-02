@@ -5,6 +5,8 @@ const service = new ProductsService();
 const { Op } = require('sequelize');
 //Middlewares
 const validateData = require('../middlewares/validate.middlewares');
+const { verifyApiKey } = require('../middlewares/auth.handler');
+
 //Schemas
 const {
   getProductSchema,
@@ -16,6 +18,7 @@ const {
 //Ruta estática
 router.get(
   '/',
+  verifyApiKey,
   validateData(getProductsSchema, 'query'),
   async (req, res, next) => {
     try {
