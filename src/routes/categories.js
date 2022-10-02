@@ -8,6 +8,8 @@ const {
   getCategorySchema,
 } = require('./../schemas/categories');
 
+const passport = require('passport');
+
 const router = express.Router();
 const service = new CategoryService();
 
@@ -36,6 +38,7 @@ router.get(
 
 router.post(
   '/',
+  passport.authenticate('jwt', { session: false }),
   validatorHandler(createCategorySchema, 'body'),
   async (req, res, next) => {
     try {
