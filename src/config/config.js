@@ -12,6 +12,10 @@ const config = {
   dbUrl: process.env.DATABASE_URL,
   apiKey: process.env.API_KEY,
   jwtSecret: process.env.JWT_SECRET,
+  emailHost: process.env.EMAIL_HOST,
+  emailPort: process.env.EMAIL_PORT,
+  emailSenderAddress: process.env.EMAIL_SENDER_ADDRESS,
+  emailApplicationPass: process.env.EMAIL_APPLICATION_PASS,
 };
 
 module.exports = config;

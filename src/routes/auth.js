@@ -20,4 +20,14 @@ router.post(
   }
 );
 
+router.post('/recovery', async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const message = await service.sendMail(email);
+    res.status(200).json(message);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
