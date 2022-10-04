@@ -8,6 +8,8 @@ const {
   getCategorySchema,
 } = require('./../schemas/categories');
 
+const { verifyApiKey, checkRoles } = require('../middlewares/auth.handler');
+
 const passport = require('passport');
 
 const router = express.Router();
@@ -38,7 +40,9 @@ router.get(
 
 router.post(
   '/',
+  verifyApiKey,
   passport.authenticate('jwt', { session: false }),
+  checkRoles('admin', 'seller'),
   validatorHandler(createCategorySchema, 'body'),
   async (req, res, next) => {
     try {

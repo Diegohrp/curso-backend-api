@@ -24,6 +24,23 @@ class OrderService {
     return order;
   }
 
+  async findByUser(userId) {
+    //La tabla de "Orders" tiene una asociación con la tabla "Customers"
+    //La tabla "Customers es la que tiene la asociación con la tabla "Users"
+    const orders = await models.Order.findAll({
+      where: {
+        /*
+          Utilizamos la asociación que denominamos como customer para
+          acceder a la asociación que denominamos user (asociación con la tabla Users)
+          para acceder al campo id de la tabla Users
+        */
+        '$customer.user.id$': userId,
+      },
+      include: [{ association: 'customer', include: 'user' }],
+    });
+    return orders;
+  }
+
   async update(id, changes) {
     return {
       id,
