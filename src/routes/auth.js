@@ -23,11 +23,20 @@ router.post(
 router.post('/recovery', async (req, res, next) => {
   try {
     const { email } = req.body;
-    const message = await service.sendMail(email);
+    const message = await service.sendRecovery(email);
     res.status(200).json(message);
   } catch (err) {
     next(err);
   }
 });
 
+router.post('/change-password', async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+    const message = await service.changePassword(token, newPassword);
+    res.status(201).json(message);
+  } catch (err) {
+    next(err);
+  }
+});
 module.exports = router;

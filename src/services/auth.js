@@ -47,12 +47,7 @@ class AuthService {
   }
 
   //Servicio para enviar el mail
-  async sendMail(email) {
-    //Verificamos que el mail exista en la db
-    const user = await service.findByEmail(email);
-    if (!user) {
-      throw boom.unauthorized('This email is not registered in the system');
-    }
+  async sendMail(emailBody) {
     const transporter = nodemailer.createTransport({
       host: emailHost,
       secure: true, //true for 465, false for other ports
@@ -62,14 +57,55 @@ class AuthService {
         pass: emailApplicationPass,
       },
     });
-    await transporter.sendMail({
+    await transporter.sendMail(emailBody);
+    return { message: 'Email has been sent' };
+  }
+
+  //Servicio para crear el link de recuperar password y enviarlo por email
+  async sendRecovery(email) {
+    //Verificamos que el mail exista en la db
+    const user = await service.findByEmail(email);
+    if (!user) {
+      throw boom.unauthorized('This email is not registered in the system');
+    }
+    //Creamos el payload del token, que contiene el identificador del usuario
+    const payload = { sub: user.id };
+    //Firmamos el token
+    const token = jwt.sign(payload, jwtSecret, { expiresIn: '15min' });
+    const link = `https://myApp.com/recovery?token=${token}`;
+    //Guardamos el token en la DB
+    await service.update(user.id, { recoveryToken: token });
+    //Generamos el cuerpo del email
+    const emailBody = {
       from: emailSenderAddress,
       to: user.email,
-      subject: 'Correo de prueba, no sé',
-      text: 'Correo de prueba, enviado desde node.js',
-      html: '<b>Correo de prueba, enviado desde node.js</b>',
-    });
-    return { message: 'Email has been sent' };
+      subject: 'Recuperación de contraseña',
+      text: `Para recuperar tu contraseña accede al siguiente link: ${link}`,
+    };
+    //Enviamos el email
+    const message = this.sendMail(emailBody);
+    return message;
+  }
+  async changePassword(token, newPassword) {
+    try {
+      //Si el token es válido, retorna el payload
+      const payload = jwt.verify(token, jwtSecret);
+
+      //Verificar existencia del usuario y retornarlo
+      const user = await service.findOne(payload.sub);
+      console.log(user.dataValues.recoveryToken);
+      if (token !== user.dataValues.recoveryToken) {
+        throw boom.unauthorized('Token not valid');
+      }
+      const hash = await bcrypy.hash(newPassword, 10);
+      await service.update(payload.sub, {
+        recoveryToken: null,
+        password: hash,
+      });
+      return { message: 'password changed' };
+    } catch (err) {
+      throw new Error(err.message);
+    }
   }
 }
 
